@@ -10,7 +10,7 @@ const DB_PATH = "./src/db.json";
 // Guarda el estado temporal de cada usuario
 const userState = {}; // { chatId : "adding" | "deleting" | "price" }
 
-b// ---------------------------
+// ---------------------------
 // /start
 // ---------------------------
 bot.onText(/\/start/, (msg) => {
@@ -164,3 +164,4 @@ bot.on("message", async (msg) => {
 
 // Exportamos el bot para usarlo en checker.js
 module.exports = bot;
+
