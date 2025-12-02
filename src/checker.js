@@ -1,11 +1,11 @@
 const fs = require("fs-extra");
 const cron = require("node-cron");
 const { getAmazonPrice } = require("./amazon");
-const TelegramBot = require("node-telegram-bot-api");
+
+// IMPORTA el bot en lugar de crear otro
+const bot = require("./bot");
 
 const DB_PATH = "./src/db.json";
-
-const bot = new TelegramBot(process.env.BOT_TOKEN);
 
 cron.schedule("0 * * * *", async () => {
     console.log("Revisando precios...");
