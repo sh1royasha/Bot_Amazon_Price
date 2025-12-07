@@ -1,9 +1,20 @@
 const { createClient } = require("@supabase/supabase-js");
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: false,
+    },
+    global: {
+      headers: {
+        "x-client-info": "supabase-js-node"
+      }
+    }
+  }
+);
 
 
 async function getProductsByChat(chat_id) {
