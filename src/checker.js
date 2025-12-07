@@ -3,16 +3,16 @@ const { getAmazonPrice } = require("./amazon");
 const bot = require("./bot");
 
 // Supabase
-const { getProductsByChat, updatePrice } = require("./db");
+const { getAllProducts, updatePrice } = require("./db");
 
 console.log("Checker activo...");
 
 
-cron.schedule("*/60 * * * *", async () => {
+cron.schedule("0 * * * *", async () => {
     console.log("Revisando precios...");
 
     try {
-        const productos = await getProductsByChat();
+        const productos = await getAllProducts();
 
         if (!productos || productos.length === 0) {
             console.log("No hay productos registrados.");
@@ -45,6 +45,6 @@ cron.schedule("*/60 * * * *", async () => {
         }
 
     } catch (error) {
-        console.error("Error en checker:", err);
+        console.error("Error en checker:", error);
     }
 });

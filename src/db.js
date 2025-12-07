@@ -31,7 +31,8 @@ async function addProduct(chat_id, nombre, link, price, fecha){
     const { data, error } = await supabase
     .from("Productos")
     .insert([
-              { chat_id: chat_id, nombre: nombre, link: link, precio_actual: price, fecha_registro: fecha, precio_actual: price, precio_mas_bajo:price}
+              { chat_id: chat_id, nombre: nombre, link: link, precio_actual: price, fecha_precio_mas_bajo: new Date(),fecha_registro: new Date(),
+    ultima_actualizacion: new Date()}
 
     ]);
 
