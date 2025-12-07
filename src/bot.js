@@ -1,11 +1,11 @@
 const TelegramBot = require("node-telegram-bot-api");
-const fs = require("fs-extra");
 const { getAmazonPrice } = require("./amazon");
+
+const { addProduct,getProductsByChat,deleteProduct } = require("./db");
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-const DB_PATH = "./src/db.json";
 
 // Guarda el estado temporal de cada usuario
 const userState = {}; // { chatId : "adding" | "deleting" | "price" }
@@ -49,16 +49,17 @@ bot.on("callback_query", async (query) => {
     }
 
     if (data === "list") {
-        const db = await fs.readJSON(DB_PATH);
 
-        const productos = db.products.filter(p => p.chatId === chatId);
+        const productos = await getProductsByChat(chatId);
 
-        if (productos.length === 0)
-            return bot.sendMessage(chatId, "📭 No tienes productos guardados.");
+        if (productos.length === 0 || !productos)
+            return bot.sendMessage(chatId, "No tienes productos guardados.");
 
-        let text = "📋 *Tus productos registrados:*\n\n";
+        let text = " *Tus productos registrados:* \n\n";
         productos.forEach((p, i) => {
-            text += `${i + 1}. ${p.url}\nPrecio guardado: ${p.lastPrice}\n\n`;
+            text += `${i + 1}. ${p.nombre ?? "Sin nombre"}\n`;
+            text += `🔗 ${p.link}\n`;
+            text += `💲 Precio actual: ${p.precio_actual}\n\n`;
         });
 
         return bot.sendMessage(chatId, text, { parse_mode: "Markdown" });
@@ -93,10 +94,10 @@ bot.on("message", async (msg) => {
             return bot.sendMessage(chatId, "❌ Link inválido. Envía un link completo de Amazon.");
         }
 
-        const db = await fs.readJSON(DB_PATH);
+        const productos = await getProductsByChat(chatId);
 
         // Evitar repetidos
-        const existe = db.products.some(p => p.url === text && p.chatId === chatId);
+        const existe = productos.some(p => p.link === text);
         if (existe) {
             userState[chatId] = null;
             return bot.sendMessage(chatId, "⚠️ Este producto ya está registrado.");
@@ -108,13 +109,7 @@ bot.on("message", async (msg) => {
             return bot.sendMessage(chatId, "❌ No pude obtener el precio. Verifica el link.");
         }
 
-        db.products.push({
-            url: text,
-            lastPrice: precio,
-            chatId
-        });
-
-        await fs.writeJSON(DB_PATH, db, { spaces: 2 });
+        await addProduct(chatId, text, precio);
 
         userState[chatId] = null;
         return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${precio}`);
@@ -126,8 +121,7 @@ bot.on("message", async (msg) => {
     if (state === "deleting") {
         const num = parseInt(text);
 
-        const db = await fs.readJSON(DB_PATH);
-        const productos = db.products.filter(p => p.chatId === chatId);
+        const productos = await getProductsByChat(chatId);
 
         if (isNaN(num) || num < 1 || num > productos.length) {
             return bot.sendMessage(chatId, "❌ Número inválido.");
@@ -135,10 +129,7 @@ bot.on("message", async (msg) => {
 
         const eliminado = productos[num - 1];
 
-        // Eliminar del JSON
-        db.products = db.products.filter(p => !(p.chatId === chatId && p.url === eliminado.url));
-
-        await fs.writeJSON(DB_PATH, db, { spaces: 2 });
+        await deleteProduct(chatId, eliminado.link);
 
         userState[chatId] = null;
         return bot.sendMessage(chatId, `🗑 Eliminado:\n${eliminado.url}`);
