@@ -6,11 +6,11 @@ const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
-async function getProductsByChat(chatId) {
+async function getProductsByChat(chat_id) {
     const { data, error} = await supabase
     .from("Productos")
     .select("*")
-    .eq("chat_id", chatId);
+    .eq("chat_id", chat_id);
 
     if(error) throw error
     return data;
@@ -41,7 +41,7 @@ async function deleteProduct(chat_id, link){
 
 async function updatePrice(chat_id, link, newPrice){
     const { data, error } = await supabase
-    .from("productos")
+    .from("Productos")
     .select("*")
     .eq("chat_id", chat_id)
     .eq("link", link)
@@ -69,10 +69,10 @@ async function updatePrice(chat_id, link, newPrice){
     }
 
      const { error: err2 } = await supabase
-    .from("productos")
+    .from("Productos")
     .update(updates)
-    .eq("chat_id", chatId)
-    .eq("link", url);
+    .eq("chat_id", chat_id)
+    .eq("link", link);
 
     if (err2) throw err2;
 
@@ -82,7 +82,7 @@ async function updatePrice(chat_id, link, newPrice){
 
 async function getAllProducts() {
     const { data, error } = await supabase
-        .from("productos")
+        .from("Productos")
         .select("*");
 
     if (error) {
