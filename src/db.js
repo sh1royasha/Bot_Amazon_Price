@@ -29,12 +29,22 @@ async function getProductsByChat(chat_id) {
 
 async function addProduct(chat_id, nombre, link, price, fecha){
     const { data, error } = await supabase
-    .from("Productos")
-    .insert([
-              { chat_id: chat_id, nombre: nombre, link: link, precio_actual: price, fecha_precio_mas_bajo: new Date(),fecha_registro: new Date(),
-    ultima_actualizacion: new Date()}
-
-    ]);
+  .from("Productos")
+  .insert([
+    {
+      chat_id,
+      nombre,
+      link,
+      precio_actual: price,
+      precio_mas_bajo: price,
+      precio_mas_alto: price,
+      fecha_precio_mas_bajo: new Date(),
+      fecha_precio_mas_alto: new Date(),
+      fecha_registro: new Date(),
+      ultima_actualizacion: new Date()
+    }
+  ])
+  .select();
 
     if(error) throw error
     return data[0];
