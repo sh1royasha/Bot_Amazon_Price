@@ -80,4 +80,17 @@ async function updatePrice(chat_id, link, newPrice){
     
 }
 
-module.exports = { getProductsByChat, addProduct, deleteProduct, updatePrice };
+async function getAllProducts() {
+    const { data, error } = await supabase
+        .from("productos")
+        .select("*");
+
+    if (error) {
+        console.error("Error al obtener todos los productos:", error);
+        return [];
+    }
+
+    return data;
+}
+
+module.exports = { getProductsByChat, addProduct, deleteProduct, updatePrice,getAllProducts };

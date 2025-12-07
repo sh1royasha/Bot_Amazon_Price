@@ -12,7 +12,7 @@ cron.schedule("*/60 * * * *", async () => {
     console.log("Revisando precios...");
 
     try {
-        const productos = await getAllProducts();
+        const productos = await getProductsByChat();
 
         if (!productos || productos.length === 0) {
             console.log("No hay productos registrados.");

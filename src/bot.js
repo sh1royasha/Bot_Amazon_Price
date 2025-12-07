@@ -52,7 +52,7 @@ bot.on("callback_query", async (query) => {
 
         const productos = await getProductsByChat(chatId);
 
-        if (productos.length === 0 || !productos)
+        if (!productos || productos.length === 0)
             return bot.sendMessage(chatId, "No tienes productos guardados.");
 
         let text = " *Tus productos registrados:* \n\n";
@@ -80,6 +80,10 @@ bot.on("callback_query", async (query) => {
 // Procesar mensajes según estado
 // ---------------------------
 bot.on("message", async (msg) => {
+    try{
+
+        if (msg.via_bot || msg.data) return;
+
     const chatId = msg.chat.id;
     const text = msg.text?.trim();
     if (!text) return;
@@ -123,16 +127,16 @@ bot.on("message", async (msg) => {
 
         const productos = await getProductsByChat(chatId);
 
-        if (isNaN(num) || num < 1 || num > productos.length) {
-            return bot.sendMessage(chatId, "❌ Número inválido.");
-        }
+        if (!productos || isNaN(num) || num < 1 || num > productos.length) {
+                return bot.sendMessage(chatId, "❌ Número inválido.");
+            }
 
         const eliminado = productos[num - 1];
 
         await deleteProduct(chatId, eliminado.link);
 
         userState[chatId] = null;
-        return bot.sendMessage(chatId, `🗑 Eliminado:\n${eliminado.url}`);
+        return bot.sendMessage(chatId, `🗑 Eliminado:\n${eliminado.link}`);
     }
 
     // ---------------------------
@@ -150,6 +154,13 @@ bot.on("message", async (msg) => {
             return bot.sendMessage(chatId, "❌ No pude obtener el precio.");
 
         return bot.sendMessage(chatId, `💲 Precio actual: *${precio}*`, { parse_mode: "Markdown" });
+    }
+    } catch(err){
+        console.error("❌ ERROR EN BOT:", err);
+        bot.sendMessage(
+        msg.chat.id,
+        "⚠️ Ocurrió un error procesando tu solicitud."
+        );
     }
 });
 
