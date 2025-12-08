@@ -108,16 +108,16 @@ bot.on("message", async (msg) => {
             return bot.sendMessage(chatId, "⚠️ Este producto ya está registrado.");
         }
 
-        const {precio, title} = await getAmazonPrice(text);
-        if (!precio) {
+        const {price, title} = await getAmazonPrice(text);
+        if (!price) {
             userState[chatId] = null;
             return bot.sendMessage(chatId, "❌ No pude obtener el precio. Verifica el link.");
         }
 
-        await addProduct(chatId, title, text, precio);
+        await addProduct(chatId, title, text, price);
 
         userState[chatId] = null;
-        return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${precio}`);
+        return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${price}`);
     }
 
     // ---------------------------
