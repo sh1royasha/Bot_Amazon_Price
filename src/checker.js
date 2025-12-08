@@ -3,7 +3,7 @@ const { getAmazonPrice } = require("./amazon");
 const bot = require("./bot");
 
 // Supabase
-const { getAllProducts, updatePrice } = require("./db");
+const { getAllProducts, updatePrice,cleanPrice } = require("./db");
 
 console.log("Checker activo...");
 
@@ -19,28 +19,35 @@ cron.schedule("0 * * * *", async () => {
             return;
         }
 
-        for (const p of productos) {
-            const newPrice = await getAmazonPrice(p.link);
+        for (const producto of productos) {
+            const {price} = await getAmazonPrice(producto.link);
 
-                if (!newPrice) {
-                    console.log(`No pude obtener precio para: ${p.link}`);
+                if (!price) {
+                    console.log(`No pude obtener precio para: ${producto.link}`);
                     continue;
                 }
 
-                if (parseFloat(newPrice) !== parseFloat(p.precio_actual)) {
+                const clean = cleanPrice(price);  
+                
+                if (!clean) {
+                    console.log(`Precio inválido: ${price}`);
+                    continue;
+                }
 
-                    await updatePrice(p.chat_id, p.link, newPrice);
+                if (clean !== parseFloat(producto.precio_actual)) {
+
+                    await updatePrice(producto.chat_id, producto.link, clean);
 
                     bot.sendMessage(
                     p.chat_id,
                     `🔔 *Cambio detectado en un producto:*\n\n` +
                     `🔗 ${p.link}\n` +
-                    `💲 Precio antes: ${p.precio_actual}\n` +
-                    `💲 Precio ahora: *${newPrice}*`,
+                    `💲 Precio antes: ${producto.precio_actual}\n` +
+                    `💲 Precio ahora: *${clean}*`,
                     { parse_mode: "Markdown" }
                     );
 
-                    console.log(`Precio actualizado: ${p.link}`);
+                    console.log(`Precio actualizado: ${producto.link}`);
                 }
         }
 
