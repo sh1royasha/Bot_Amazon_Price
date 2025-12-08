@@ -134,14 +134,21 @@ async function getAllProducts() {
 }
 
 function cleanPrice(rawPrice) {
-    if (!rawPrice) return null;
+    if (!rawPrice || typeof rawPrice !== "string") {
+        console.log("❌ Precio inválido:", rawPrice);
+        return null;
+    }
 
-    return parseFloat(
-        rawPrice
-            .replace(/\./g, "")     // quita puntos
-            .replace(/,/g, "")      // quita comas
-            .replace(/[^\d]/g, "")  // quita caracteres raros
-    );
+    let cleaned = rawPrice
+        .replace(/[^\d.,]/g, "")  // elimina cualquier cosa que no sea número/coma/punto
+        .trim();
+
+    // Reemplazo de miles → decimal
+    cleaned = cleaned.replace(/,/g, "");
+    cleaned = cleaned.replace(/(\d)\.(\d{2})$/, "$1.$2");
+
+    return cleaned;
 }
+
 
 module.exports = { getProductsByChat, addProduct, deleteProduct, updatePrice,getAllProducts,cleanPrice };
