@@ -19,12 +19,21 @@ async function getAmazonPrice(url) {
             $("#priceblock_ourprice").text().trim() ||
             $("#priceblock_dealprice").text().trim();
 
-        return price || null;
+        const title =
+            $("#productTitle").text().trim() ||            // Título estándar
+            $("span#title").text().trim() ||               // Alternativo
+            $("h1.a-size-large").text().trim();            // Backup por si Amazon cambia
+
+
+        return {
+            price: price || null,
+            title: title || null
+        }
 
     } catch (err) {
         console.log("Error Amazon:", err.message);
-        return null;
-    }
+        return { price: null, title: null };
+    } 
 }
 
 module.exports = { getAmazonPrice };

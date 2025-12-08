@@ -41,8 +41,6 @@ bot.onText(/\/menu/, (msg) => {
 // ---------------------------
 bot.on("callback_query", async (query) => {
 
-    console.log(query);        // Objeto completo
-  console.log(query.data);
     const chatId = query.message.chat.id;
     const data = query.data;
 
@@ -110,13 +108,13 @@ bot.on("message", async (msg) => {
             return bot.sendMessage(chatId, "⚠️ Este producto ya está registrado.");
         }
 
-        const precio = await getAmazonPrice(text);
+        const {precio, title} = await getAmazonPrice(text);
         if (!precio) {
             userState[chatId] = null;
             return bot.sendMessage(chatId, "❌ No pude obtener el precio. Verifica el link.");
         }
 
-        await addProduct(chatId, text, precio);
+        await addProduct(chatId, title, text, precio);
 
         userState[chatId] = null;
         return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${precio}`);
