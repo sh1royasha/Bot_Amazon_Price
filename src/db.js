@@ -27,7 +27,7 @@ async function getProductsByChat(chat_id) {
     return data;
 }
 
-async function addProduct(chat_id, nombre, link, price, fecha){
+async function addProduct(chat_id, nombre, link, price){
     const { data, error } = await supabase
   .from("Productos")
   .insert([
