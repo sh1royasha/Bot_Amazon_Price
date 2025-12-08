@@ -1,7 +1,7 @@
-const TelegramBot = require("node-telegram-bot-api");
-const { getAmazonPrice } = require("./amazon");
+const TelegramBot = require("node-telegram-bot-api"); //Biblioteca pra bots telegram
+const { getAmazonPrice } = require("./amazon"); // Funcion que extrae precio de amazon
 
-const { addProduct,getProductsByChat,deleteProduct } = require("./db");
+const { addProduct,getProductsByChat,deleteProduct } = require("./db"); //Funciones de la bd
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
@@ -11,7 +11,7 @@ const bot = new TelegramBot(TOKEN, { polling: true });
 const userState = {}; // { chatId : "adding" | "deleting" | "price" }
 
 // ---------------------------
-// /start
+// /start  comando
 // ---------------------------
 bot.onText(/\/start/, (msg) => {
     bot.sendMessage(
@@ -21,7 +21,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 // ---------------------------
-// /menu
+// /menu comando
 // ---------------------------
 bot.onText(/\/menu/, (msg) => {
     bot.sendMessage(msg.chat.id, "📌 Menú principal", {
@@ -40,6 +40,9 @@ bot.onText(/\/menu/, (msg) => {
 // Botones del menú
 // ---------------------------
 bot.on("callback_query", async (query) => {
+
+    console.log(query);        // Objeto completo
+  console.log(query.data);
     const chatId = query.message.chat.id;
     const data = query.data;
 
