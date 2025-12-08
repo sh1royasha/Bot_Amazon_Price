@@ -17,10 +17,12 @@ const supabase = createClient(
 );
 
 function nowLocalString() {
-    const d = new Date();
-    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 19).replace("T", " ");
+    const date = new Date();
+    const offsetMs = date.getTimezoneOffset() * 60000;
+    const localDate = new Date(date.getTime() - offsetMs);
+    return localDate.toISOString().slice(0, 19).replace("T", " ");
 }
+
 
 
 async function getProductsByChat(chat_id) {
