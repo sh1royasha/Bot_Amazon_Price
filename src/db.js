@@ -115,4 +115,15 @@ async function getAllProducts() {
     return data;
 }
 
-module.exports = { getProductsByChat, addProduct, deleteProduct, updatePrice,getAllProducts };
+function cleanPrice(rawPrice) {
+    if (!rawPrice) return null;
+
+    return parseFloat(
+        rawPrice
+            .replace(/\./g, "")     // quita puntos
+            .replace(/,/g, "")      // quita comas
+            .replace(/[^\d]/g, "")  // quita caracteres raros
+    );
+}
+
+module.exports = { getProductsByChat, addProduct, deleteProduct, updatePrice,getAllProducts,cleanPrice };

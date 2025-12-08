@@ -1,7 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api"); //Biblioteca pra bots telegram
 const { getAmazonPrice } = require("./amazon"); // Funcion que extrae precio de amazon
 
-const { addProduct,getProductsByChat,deleteProduct } = require("./db"); //Funciones de la bd
+const { addProduct,getProductsByChat,deleteProduct,cleanPrice } = require("./db"); //Funciones de la bd
 
 const TOKEN = process.env.BOT_TOKEN;
 const bot = new TelegramBot(TOKEN, { polling: true });
@@ -110,17 +110,20 @@ bot.on("message", async (msg) => {
         }
 
         const {price, title} = await getAmazonPrice(text);
-        if (!price || !title) {
+
+        const clean = cleanPrice(price);
+
+        if (!clean || !title) {
             userState[chatId] = null;
             return bot.sendMessage(chatId, "❌ No pude obtener el precio o el nombre del producto.");
         }
 
-        console.log("📌 GUARDANDO PRODUCTO:", { chatId, title, link: text, price });
+        console.log("📌 GUARDANDO PRODUCTO:", { chatId, title, link: text, clean });
 
-        await addProduct(chatId, title, text, price);
+        await addProduct(chatId, title, text, clean);
 
         userState[chatId] = null;
-        return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${price}`);
+        return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${clean}`);
     }
 
     // ---------------------------
