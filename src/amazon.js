@@ -15,16 +15,16 @@ async function getAmazonPrice(url) {
         const $ = cheerio.load(data);
 
         const priceOffscreen = $('span.a-offscreen').first().text().trim();
-const priceWhole = $('span.a-price-whole').first().text().trim();
-const priceFraction = $('span.a-price-fraction').first().text().trim();
+        const priceWhole = $('span.a-price-whole').first().text().trim();
+        const priceFraction = $('span.a-price-fraction').first().text().trim();
 
-let rawPrice =
-    priceOffscreen ||
-    (priceWhole ? `${priceWhole}.${priceFraction || "00"}` : null);
+        let rawPrice =
+            priceOffscreen ||
+            (priceWhole ? `${priceWhole}.${priceFraction || "00"}` : null);
 
-if (!rawPrice) {
-    console.log("❌ No se encontró precio en la página");
-}
+        if (!rawPrice) {
+            console.log("❌ No se encontró precio en la página");
+        }
 
         const title =
             $("#productTitle").text().trim() ||            // Título estándar
@@ -33,7 +33,7 @@ if (!rawPrice) {
 
 
         return {
-            price: price || null,
+            price: rawPrice || null,
             title: title || null
         }
 
