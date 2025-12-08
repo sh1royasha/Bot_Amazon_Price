@@ -17,11 +17,19 @@ const supabase = createClient(
 );
 
 function nowLocalString() {
-    const date = new Date();
-    const offsetMs = date.getTimezoneOffset() * 60000;
-    const localDate = new Date(date.getTime() - offsetMs);
-    return localDate.toISOString().slice(0, 19).replace("T", " ");
+    const d = new Date();
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const seconds = String(d.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
 
 
 
