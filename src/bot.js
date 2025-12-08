@@ -99,6 +99,7 @@ bot.on("message", async (msg) => {
             return bot.sendMessage(chatId, "❌ Link inválido. Envía un link completo de Amazon.");
         }
 
+        
         const productos = await getProductsByChat(chatId);
 
         // Evitar repetidos
@@ -109,10 +110,12 @@ bot.on("message", async (msg) => {
         }
 
         const {price, title} = await getAmazonPrice(text);
-        if (!price) {
+        if (!price || !title) {
             userState[chatId] = null;
-            return bot.sendMessage(chatId, "❌ No pude obtener el precio. Verifica el link.");
+            return bot.sendMessage(chatId, "❌ No pude obtener el precio o el nombre del producto.");
         }
+
+        console.log("📌 GUARDANDO PRODUCTO:", { chatId, title, link: text, price });
 
         await addProduct(chatId, title, text, price);
 
