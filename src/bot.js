@@ -118,8 +118,6 @@ bot.on("message", async (msg) => {
             return bot.sendMessage(chatId, "❌ No pude obtener el precio o el nombre del producto.");
         }
 
-        console.log("📌 GUARDANDO PRODUCTO:", { chatId, title, link: text, clean });
-
         await addProduct(chatId, title, text, clean);
 
         userState[chatId] = null;

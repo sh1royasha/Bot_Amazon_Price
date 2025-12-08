@@ -16,9 +16,10 @@ const supabase = createClient(
   }
 );
 
-function nowLocal() {
+function nowLocalString() {
     const d = new Date();
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 19).replace("T", " ");
 }
 
 
@@ -33,6 +34,8 @@ async function getProductsByChat(chat_id) {
 }
 
 async function addProduct(chat_id, nombre, link, price){
+  const fecha = nowLocalString();
+
     const { data, error } = await supabase
   .from("Productos")
   .insert([
@@ -43,10 +46,10 @@ async function addProduct(chat_id, nombre, link, price){
       precio_actual: price,
       precio_mas_bajo: price,
       precio_mas_alto: price,
-      fecha_precio_mas_bajo: nowLocal(),
-      fecha_precio_mas_alto: nowLocal(),
-      fecha_registro: nowLocal(),
-      ultima_actualizacion: nowLocal(),
+      fecha_precio_mas_bajo: fecha,
+      fecha_precio_mas_alto: fecha,
+      fecha_registro: fecha,
+      ultima_actualizacion: fecha,
     }
   ])
   .select();
