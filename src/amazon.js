@@ -14,10 +14,14 @@ async function getAmazonPrice(url) {
 
         const $ = cheerio.load(data);
 
-        const price =
-            $("#corePrice_feature_div .a-price .a-price-whole").text().trim() ||
-            $("#priceblock_ourprice").text().trim() ||
-            $("#priceblock_dealprice").text().trim();
+        const priceWhole = $("span.a-price-whole").first().text().trim();
+        const priceFraction = $("span.a-price-fraction").first().text().trim() || "00";
+
+        let raw = priceWhole + "." + priceFraction;      // ej: "17,740" + ".99" => "17,740.99"
+        raw = raw.replace(/[.,]/g, (m, i, s) => i < s.length - 3 ? "" : "."); 
+        // Esto quita comas de miles y deja solo el punto decimal
+
+        const price = parseFloat(raw);
 
         const title =
             $("#productTitle").text().trim() ||            // Título estándar
