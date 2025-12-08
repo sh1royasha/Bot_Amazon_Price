@@ -89,6 +89,8 @@ bot.on("message", async (msg) => {
     const text = msg.text?.trim();
     if (!text) return;
 
+    if (text.startsWith("/")) return;
+    
     const state = userState[chatId];
 
     // ---------------------------
