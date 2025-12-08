@@ -121,7 +121,9 @@ bot.on("message", async (msg) => {
         await addProduct(chatId, title, text, clean);
 
         userState[chatId] = null;
-        return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${clean}`);
+        return bot.sendMessage(chatId, `✔ Producto agregado.\nPrecio detectado: ${clean}`)
+        .then(()=> bot.sendMessage(chatId, "¿Qué deseas hacer ahora?"))
+        .then(() => showMenu(chatId));
     }
 
     // ---------------------------
@@ -141,7 +143,9 @@ bot.on("message", async (msg) => {
         await deleteProduct(chatId, eliminado.link);
 
         userState[chatId] = null;
-        return bot.sendMessage(chatId, `🗑 Eliminado:\n${eliminado.link}`);
+        return bot.sendMessage(chatId, `🗑 Eliminado:\n${eliminado.link}`)
+        .then(()=> bot.sendMessage(chatId, "¿Qué deseas hacer ahora?"))
+        .then(() => showMenu(chatId));;
     }
 
     // ---------------------------
@@ -158,8 +162,14 @@ bot.on("message", async (msg) => {
         if (!precio)
             return bot.sendMessage(chatId, "❌ No pude obtener el precio.");
 
-        return bot.sendMessage(chatId, `💲 Precio actual: *${precio}*`, { parse_mode: "Markdown" });
+        return bot.sendMessage(chatId, `💲 Precio actual: *${precio}*`, { parse_mode: "Markdown" })
+        .then(()=> bot.sendMessage(chatId, "¿Qué deseas hacer ahora?"))
+        .then(() => showMenu(chatId));;
     }
+
+    return bot.sendMessage(chatId, "❓ No entendí eso.\nUsa /menu para ver las opciones.");
+ 
+
     } catch(err){
         console.error("❌ ERROR EN BOT:", err);
         bot.sendMessage(
