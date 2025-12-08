@@ -24,16 +24,7 @@ bot.onText(/\/start/, (msg) => {
 // /menu comando
 // ---------------------------
 bot.onText(/\/menu/, (msg) => {
-    bot.sendMessage(msg.chat.id, "📌 Menú principal", {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: "➕ Agregar producto", callback_data: "add" }],
-                [{ text: "📋 Listar productos", callback_data: "list" }],
-                [{ text: "❌ Eliminar producto", callback_data: "delete" }],
-                [{ text: "💲 Consultar precio actual", callback_data: "price" }]
-            ]
-        }
-    });
+     showMenu(msg.chat.id);
 });
 
 // ---------------------------
@@ -63,7 +54,9 @@ bot.on("callback_query", async (query) => {
             text += `💲 Precio actual: ${p.precio_actual}\n\n`;
         });
 
-        return bot.sendMessage(chatId, text, { parse_mode: "Markdown" });
+        return bot.sendMessage(chatId, text, { parse_mode: "Markdown" })
+        .then(()=> bot.sendMessage(chatId, "¿Qué deseas hacer ahora?"))
+        .then(() => showMenu(chatId));;
     }
 
     if (data === "delete") {
@@ -90,7 +83,7 @@ bot.on("message", async (msg) => {
     if (!text) return;
 
     if (text.startsWith("/")) return;
-    
+
     const state = userState[chatId];
 
     // ---------------------------
@@ -180,6 +173,20 @@ bot.on("message", async (msg) => {
         );
     }
 });
+
+function showMenu(chatId) {
+    return bot.sendMessage(chatId, "📌 Menú principal", {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: "➕ Agregar producto", callback_data: "add" }],
+                [{ text: "📋 Listar productos", callback_data: "list" }],
+                [{ text: "❌ Eliminar producto", callback_data: "delete" }],
+                [{ text: "💲 Consultar precio actual", callback_data: "price" }]
+            ]
+        }
+    });
+}
+
 
 // Exportamos el bot para usarlo en checker.js
 module.exports = bot;
