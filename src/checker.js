@@ -39,9 +39,9 @@ cron.schedule("0 * * * *", async () => {
                     await updatePrice(producto.chat_id, producto.link, clean);
 
                     bot.sendMessage(
-                    p.chat_id,
+                    producto.chat_id,
                     `🔔 *Cambio detectado en un producto:*\n\n` +
-                    `🔗 ${p.link}\n` +
+                    `🔗 ${producto.link}\n` +
                     `💲 Precio antes: ${producto.precio_actual}\n` +
                     `💲 Precio ahora: *${clean}*`,
                     { parse_mode: "Markdown" }
